@@ -1,182 +1,154 @@
 ---
-description: Format terminal output with consistent colors, prefixes, and transaction hash formatting using @onchain-bots/shared-terminal
+description: Format terminal output with consistent colors, prefixes, and structured messaging
 allowed-tools: Read, Edit, Write, Glob, Grep
 ---
 
 # Pretty Print Skill
 
-Use the `@onchain-bots/shared-terminal` package for consistent, readable terminal output across all bots.
+Guidelines for creating consistent, readable terminal output in CLI applications.
 
-## Quick Start
+## Core Principles
+
+1. **Use semantic formatting** - Apply colors and prefixes based on meaning, not aesthetics
+2. **Be consistent** - Same status types should always look the same
+3. **Keep it scannable** - Important information should stand out at a glance
+
+## Recommended Patterns
+
+### Status Messages
+
+Use distinct visual indicators for different message types:
 
 ```typescript
-import {
-  success,
-  error,
-  warning,
-  prefix,
-  formatTxHashForStdout,
-} from '@onchain-bots/shared-terminal';
+// Success - green with checkmark
+console.log('\x1b[32m✓\x1b[0m Task completed');
 
-// Success/error/warning messages
-console.log(success('Transaction confirmed'));   // ✓ Transaction confirmed (green)
-console.log(error('Transaction failed'));        // ✗ Transaction failed (red)
-console.log(warning('Low balance'));             // ⚠️  Low balance (yellow)
+// Error - red with X
+console.log('\x1b[31m✗\x1b[0m Operation failed');
 
-// Status prefixes
-console.log(prefix.skip('Already claimed'));     // [SKIP] Already claimed
-console.log(prefix.dryRun('Would swap 100'));    // [DRY RUN] Would swap 100
-console.log(prefix.ledger('Confirm on device')); // [LEDGER] Confirm on device
+// Warning - yellow with warning symbol
+console.log('\x1b[33m⚠\x1b[0m Something may be wrong');
 
-// Transaction hashes (shortened for terminal, full for reports)
-console.log(formatTxHashForStdout('base', txHash));
+// Info - cyan with info symbol
+console.log('\x1b[36mℹ\x1b[0m Additional information');
 ```
 
-## Installation
+### Status Prefixes
 
-Add to your package.json:
-```json
-{
-  "dependencies": {
-    "@onchain-bots/shared-terminal": "workspace:*"
-  }
+Use bracketed prefixes for categorizing output:
+
+```typescript
+// Common prefix patterns
+console.log('[SKIP] Already processed');
+console.log('[DRY RUN] Would execute action');
+console.log('[DEBUG] Internal state info');
+console.log('[RETRY] Attempt 2/3');
+console.log('[WAIT] Pending response...');
+```
+
+### Text Styling
+
+```typescript
+// Bold for emphasis
+console.log('\x1b[1mImportant value\x1b[0m');
+
+// Dim/muted for less important info
+console.log('\x1b[2mSecondary details\x1b[0m');
+
+// Colored text
+console.log('\x1b[34mBlue text\x1b[0m');    // Blue
+console.log('\x1b[32mGreen text\x1b[0m');   // Green
+console.log('\x1b[33mYellow text\x1b[0m');  // Yellow
+console.log('\x1b[31mRed text\x1b[0m');     // Red
+console.log('\x1b[36mCyan text\x1b[0m');    // Cyan
+```
+
+## Creating a Formatting Utility
+
+For larger projects, create a simple formatting module:
+
+```typescript
+// utils/terminal.ts
+export const colors = {
+  reset: '\x1b[0m',
+  bold: '\x1b[1m',
+  dim: '\x1b[2m',
+  red: '\x1b[31m',
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  cyan: '\x1b[36m',
+  gray: '\x1b[90m',
+} as const;
+
+export function success(msg: string): string {
+  return `${colors.green}✓${colors.reset} ${msg}`;
+}
+
+export function error(msg: string): string {
+  return `${colors.red}✗${colors.reset} ${msg}`;
+}
+
+export function warning(msg: string): string {
+  return `${colors.yellow}⚠${colors.reset} ${msg}`;
+}
+
+export function info(msg: string): string {
+  return `${colors.cyan}ℹ${colors.reset} ${msg}`;
+}
+
+export function highlight(msg: string): string {
+  return `${colors.bold}${msg}${colors.reset}`;
+}
+
+export function muted(msg: string): string {
+  return `${colors.dim}${msg}${colors.reset}`;
+}
+
+export const prefix = {
+  skip: (msg: string) => `${colors.gray}[SKIP]${colors.reset} ${colors.dim}${msg}${colors.reset}`,
+  dryRun: (msg: string) => `${colors.cyan}[DRY RUN]${colors.reset} ${msg}`,
+  debug: (msg: string) => `${colors.gray}[DEBUG]${colors.reset} ${msg}`,
+  retry: (msg: string) => `${colors.yellow}[RETRY]${colors.reset} ${msg}`,
+  wait: (msg: string) => `${colors.blue}[WAIT]${colors.reset} ${msg}`,
+  step: (n: number, total: number, msg: string) => `[${n}/${total}] ${msg}`,
+};
+```
+
+## Usage Example
+
+```typescript
+import { success, error, warning, prefix, highlight } from './utils/terminal.js';
+
+// Report progress
+console.log(prefix.step(1, 3, 'Starting process'));
+console.log(success(`Processed ${highlight('42')} items`));
+
+// Handle conditions
+if (alreadyDone) {
+  console.log(prefix.skip('Nothing to do'));
+  return;
+}
+
+// Show errors
+if (!valid) {
+  console.log(error('Validation failed'));
+  console.log(warning('Check your configuration'));
+}
+
+// Dry run mode
+if (dryRun) {
+  console.log(prefix.dryRun('Would perform action'));
+} else {
+  performAction();
+  console.log(success('Action completed'));
 }
 ```
 
-Then run `pnpm install`.
+## Best Practices
 
-## API Reference
-
-### Formatters (with icons)
-
-| Function | Output | Use Case |
-|----------|--------|----------|
-| `success(msg)` | `✓ msg` (green) | Confirmed transactions, completed steps |
-| `error(msg)` | `✗ msg` (red) | Failed operations |
-| `warning(msg)` | `⚠️ msg` (yellow) | Non-fatal issues |
-| `info(msg)` | `ℹ msg` (cyan) | General information |
-| `action(msg)` | `msg` (bold blue) | Current action being performed |
-| `technical(msg)` | `msg` (dimmed) | Addresses, hashes, technical details |
-| `highlight(msg)` | `msg` (bold) | Important values (amounts, etc.) |
-| `muted(msg)` | `msg` (gray) | Less important text |
-
-### Prefixes (status tags)
-
-| Prefix | Tag | Use Case |
-|--------|-----|----------|
-| `prefix.skip(msg)` | `[SKIP]` | Skipped operations (nothing to do) |
-| `prefix.dryRun(msg)` | `[DRY RUN]` | Simulated operations |
-| `prefix.debug(msg)` | `[DEBUG]` | Debug information |
-| `prefix.resume(msg)` | `[RESUME]` | Resumed from database/cache |
-| `prefix.delta(msg)` | `[DELTA]` | Balance/amount changes |
-| `prefix.receipt(msg)` | `[RECEIPT]` | Transaction receipt info |
-| `prefix.ledger(msg)` | `[LEDGER]` | Hardware wallet prompts |
-| `prefix.fallback(msg)` | `[FALLBACK]` | Fallback to alternative |
-| `prefix.zeroX(msg)` | `[0x]` | 0x Protocol operations |
-| `prefix.ignore(msg)` | `[IGNORE]` | Intentionally ignored |
-| `prefix.retry(msg)` | `[RETRY]` | Retry attempts |
-| `prefix.wait(msg)` | `[WAIT]` | Waiting/pending |
-| `prefix.chain(name, msg)` | `[NAME]` | Chain-specific |
-| `prefix.step(n, total, msg)` | `[n/total]` | Numbered steps |
-
-### Transaction Hash Utilities
-
-| Function | Description |
-|----------|-------------|
-| `txUrl(chain, hash)` | Get explorer URL for transaction |
-| `addressUrl(chain, addr)` | Get explorer URL for address |
-| `shortenHash(hash)` | `0x12345678...fedcba09` |
-| `shortenAddress(addr)` | `0x1234...5678` |
-| `formatTxHashForStdout(chain, hash)` | Shortened + URL (for terminal) |
-| `formatTxHashForReport(chain, hash)` | Full hash + URL (for reports) |
-
-**Supported chains:** `mainnet`, `base`, `optimism`, `arbitrum`, `mode`, `polygon`, `bsc`, `avalanche`, `gnosis`
-
-### Raw Colors
-
-```typescript
-import { colors, styles } from '@onchain-bots/shared-terminal';
-
-// Raw ANSI codes
-console.log(`${colors.green}text${colors.reset}`);
-console.log(`${colors.bold}${colors.blue}text${colors.reset}`);
-
-// Pre-combined styles
-console.log(`${styles.success}text${colors.reset}`);  // bold green
-console.log(`${styles.error}text${colors.reset}`);    // bold red
-```
-
-## Examples
-
-### Claim Rewards Step
-
-```typescript
-import { success, prefix, technical, formatTxHashForStdout } from '@onchain-bots/shared-terminal';
-
-// Nothing to claim
-console.log(prefix.skip('No rewards to claim'));
-
-// Dry run
-console.log(prefix.dryRun(`Would claim ${amount} AERO`));
-
-// Success
-console.log(success(`Claimed ${highlight(amount)} AERO`));
-console.log(technical(formatTxHashForStdout('base', txHash)));
-```
-
-### Swap Step with Fallback
-
-```typescript
-import { success, error, prefix, action } from '@onchain-bots/shared-terminal';
-
-console.log(action('Swapping AERO → USDC'));
-
-// Aerodrome failed, trying 0x
-console.log(prefix.fallback('Aerodrome route failed, trying 0x'));
-console.log(prefix.zeroX(`Quote: ${aeroAmount} AERO → ${usdcAmount} USDC`));
-
-// Success
-console.log(success(`Swapped ${aeroAmount} AERO → ${usdcAmount} USDC`));
-```
-
-### Ledger Signing
-
-```typescript
-import { prefix, colors } from '@onchain-bots/shared-terminal';
-
-console.log(prefix.ledger('Please confirm transaction on device'));
-console.log(prefix.retry('Attempt 2/3 - device was locked'));
-```
-
-## Migration Guide
-
-Replace old color imports:
-
-```typescript
-// Before
-import { colors, success, error } from '../utils/colors.js';
-
-// After
-import { colors, success, error, prefix } from '@onchain-bots/shared-terminal';
-```
-
-Replace manual prefixes:
-
-```typescript
-// Before
-console.log(`${colors.gray}[SKIP]${colors.reset} ${colors.dim}message${colors.reset}`);
-
-// After
-console.log(prefix.skip('message'));
-```
-
-Replace tx hash formatting:
-
-```typescript
-// Before
-import { formatTxHashForStdout } from '../utils/txHash.js';
-
-// After
-import { formatTxHashForStdout } from '@onchain-bots/shared-terminal';
-// Note: ChainKey type is now ChainId, ensure your chain strings match
-```
+1. **Reset after styling** - Always end styled text with the reset code
+2. **Test in different terminals** - ANSI codes may render differently
+3. **Provide plain text fallback** - Consider `NO_COLOR` environment variable
+4. **Use sparingly** - Too much color reduces effectiveness
+5. **Group related output** - Use prefixes to categorize related messages
