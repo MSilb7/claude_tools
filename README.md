@@ -22,8 +22,15 @@ Save a project-local skill to `~/.claude/commands/` for global access.
 /commit-skill my-skill
 ```
 
+### `/sync-commands`
+Symlink all skills from this repo to `~/.claude/commands/`. Run after adding new skills.
+
 ## Installation
 
-Copy any `.md` file from `commands/` to:
-- **Project-local**: `.claude/commands/` in your repo
-- **Global**: `~/.claude/commands/` for all projects
+First time setup (symlink this skill manually, then use it):
+
+```bash
+ln -sf "/Users/michaelsilberling/Documents Local/GitHub/claude_tools/commands/sync-commands.md" ~/.claude/commands/
+```
+
+Then run `/sync-commands` to link everything else. Run it again after adding new skills.
