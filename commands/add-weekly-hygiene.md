@@ -111,6 +111,10 @@ Periodically verify the existing weekly-hygiene routines are still CORRECT, not 
 4. **Safety-surface drift** — re-assess the risk surface (Step 1/3). If the repo gained a live/signing/order-placement seam not covered by the routine's HARD CONSTRAINTS, that's the highest-severity finding → tighten the constraints.
 5. **Health** — `enabled` true? `last_fired_at` recent (fired on schedule)? cron sane and not colliding with another routine's minute? inert env MCP connectors present (known, low priority — see gotchas)?
 6. **Coverage** — also run RECONCILE MODE (new repos missing a routine).
+7. **Compounding coverage** — a repo with no `docs/compounding/SOP.md` → propose `/compounding setup`
+   for it (the self-improvement queue + Ready gate + daily auto-drain system; see
+   `commands/compounding.md`). A repo WITH the system: check its installed stamps against the current
+   `commands/compounding-templates/VERSION` — stale → propose `/compounding upgrade`.
 
 Output a short punch-list per routine: OK, or the specific drift + the fix. For any routine needing a prompt/gate/branch/constraint change, apply it with `RemoteTrigger` `update` resending the **full** `job_config` (partial updates drop nested fields — see gotchas). Confirm with the user before applying changes to live routines. End with a one-line "N routines OK, M updated, K repos missing coverage."
 
