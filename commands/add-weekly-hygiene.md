@@ -3,7 +3,7 @@ description: Create a weekly repo-hygiene cloud routine (claude.ai code trigger)
 argument-hint: "[repo: a local path, an owner/repo slug, or omit for the current repo]"
 ---
 
-Create a **per-repo weekly repo-hygiene cloud routine** via the `RemoteTrigger` tool. Each routine clones ONE repo on Sunday, scans it across four dimensions, auto-applies only obvious fixes on a branch, runs a stack-appropriate gate, and opens a PR for review (NEVER merges). This skill is the repeatable recipe behind that family of routines.
+Create a **per-repo weekly repo-hygiene cloud routine** via the `RemoteTrigger` tool. Each routine clones ONE repo on Sunday, scans it across five dimensions, auto-applies only obvious fixes on a branch, runs a stack-appropriate gate, and opens a PR for review (NEVER merges). This skill is the repeatable recipe behind that family of routines.
 
 Target repo = `$ARGUMENTS` (a local checkout path, a GitHub `owner/repo` slug, or — if empty — the current repo / cwd).
 
@@ -52,11 +52,12 @@ GOAL: sweep this ONE repo for cleanup + improvements, auto-apply only safe/obvio
 
 STEPS:
 1. `git fetch origin && git checkout <BRANCH> && git pull --ff-only`. <DOCS_NOTE>
-2. SCAN across four dimensions; prioritized punch-list, each item tagged [OBVIOUS-FIX] (low-risk, mechanical) or [PROPOSE] (judgment/risky/bigger) with file:line + effort S/M/L. Focus: <FOCUS>.
+2. SCAN across five dimensions; prioritized punch-list, each item tagged [OBVIOUS-FIX] (low-risk, mechanical) or [PROPOSE] (judgment/risky/bigger) with file:line + effort S/M/L. Focus: <FOCUS>.
    (a) Dead code / duplication / simplification.
    (b) DOC DRIFT — compare <DOCS> against the merged code; flag inaccurate/missing/contradictory. HIGHEST SEVERITY: <DRIFT_SEV>.
    (c) Test gaps on critical paths — <CRIT_PATHS>; skipped tests; mock-only assertions.
    (d) Artifact / secret / .gitignore hygiene — committed artifacts, `.gitignore` gaps, TODO/FIXME triage, a LOUD secrets check.
+   (e) SIMPLIFICATION SWEEP — the same knowledge duplicated in N places (report the copies + which single home should be canonical, the rest becoming pointers — duplication is how copies go stale); procedures/docs that have accreted steps no longer paying rent; legacy dual-formats past their deprecation window; guards stacked where the underlying thing could just be made simple — prefer making the thing simple over adding another guard on top of it. Rank by rent paid: duplication in always-loaded files (CLAUDE.md, AGENTS.md, skills) costs every session. Small+safe ⇒ [OBVIOUS-FIX]; bigger ⇒ [PROPOSE].
 3. Create branch `chore/weekly-hygiene-$(date +%Y%m%d)`. AUTO-APPLY only [OBVIOUS-FIX] items. Then run the gate: <GATE> — must pass. If an applied fix breaks the gate, revert THAT fix and move it to [PROPOSE].
 4. `gh pr create --base <BRANCH>` titled `chore(repo): weekly hygiene <YYYY-MM-DD>`, body = full punch-list + gate result. DO NOT MERGE. Zero obvious fixes → still open a PR/issue.
 5. FINAL REPORT: PR link, # obvious fixes applied, gate pass/fail, # [PROPOSE] items, any LOUD secret finding.
