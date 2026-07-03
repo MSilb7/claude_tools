@@ -22,6 +22,18 @@ Save a project-local skill to `~/.claude/commands/` for global access.
 /commit-skill my-skill
 ```
 
+### `/compounding`
+Set up, upgrade, or check the compounding self-improvement system (capture → queue → Ready gate →
+daily auto-drain) in any repo. Canonical templates live in `commands/compounding-templates/`
+(VERSION-stamped; system improvements arrive as `Upstream: claude_tools` queue items and fan out to
+every repo via `/compounding upgrade`).
+
+```
+/compounding                 # setup (default) — full tiered install, one PR, guided routines
+/compounding upgrade         # sync a repo's installed files to the latest templates
+/compounding status          # run the selector, report the queue
+```
+
 ### `/sync-commands`
 Symlink all skills from this repo to `~/.claude/commands/`. Run after adding new skills.
 
