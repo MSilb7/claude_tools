@@ -14,7 +14,7 @@
 //   node scripts/compounding-status.mjs --json    # {generatedAt, degraded, maxEffort, items, eligible}
 //   COMPOUNDING_MAX_EFFORT=low|medium|high        # auto-eligibility effort ceiling (default low)
 
-import { readdirSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync, realpathSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
@@ -245,6 +245,14 @@ function main() {
   }
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  main();
-}
+// Direct-execution check must survive symlinked installs (node resolves import.meta.url to the
+// realpath, but argv[1] stays the symlink) — compare realpaths on both sides.
+const isDirectRun = (() => {
+  if (!process.argv[1]) return false;
+  try {
+    return pathToFileURL(realpathSync(process.argv[1])).href === import.meta.url;
+  } catch {
+    return false;
+  }
+})();
+if (isDirectRun) main();
