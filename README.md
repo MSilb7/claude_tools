@@ -22,6 +22,34 @@ Save a project-local skill to `~/.claude/commands/` for global access.
 /commit-skill my-skill
 ```
 
+### `/codebase-review`
+Review a codebase holistically (via `superpowers:brainstorming`) to find missing features,
+consolidation opportunities, and simplifications.
+
+```
+/codebase-review
+/codebase-review error handling and logging
+```
+
+### `/data-science`
+Structured data science workflow — problem understanding → technique selection → execution →
+rigorous validation. Use for any analytical or statistical question about data.
+(Example output: `ab_test_analysis.ipynb` at the repo root.)
+
+```
+/data-science did variant B actually improve conversion?
+```
+
+### `/add-weekly-hygiene`
+Create a per-repo weekly repo-hygiene cloud routine (claude.ai code trigger) — detects the repo's
+stack, picks the right test/typecheck gate, and registers a Sunday routine that opens a hygiene PR
+(never merges).
+
+```
+/add-weekly-hygiene              # current repo
+/add-weekly-hygiene owner/repo
+```
+
 ### `/compounding`
 Set up, upgrade, or check the compounding self-improvement system (capture → queue → Ready gate →
 daily auto-drain) in any repo. Canonical templates live in `commands/compounding-templates/`
