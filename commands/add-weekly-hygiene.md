@@ -3,7 +3,7 @@ description: Create a weekly repo-hygiene cloud routine (claude.ai code trigger)
 argument-hint: "[repo: a local path, an owner/repo slug, or omit for the current repo]"
 ---
 
-Create a **per-repo weekly repo-hygiene cloud routine** via the `RemoteTrigger` tool. Each routine clones ONE repo on Sunday, scans it across five dimensions, auto-applies only obvious fixes on a branch, runs a stack-appropriate gate, and opens a PR for review (NEVER merges). This skill is the repeatable recipe behind that family of routines.
+Create a **per-repo weekly repo-hygiene cloud routine** via this session's remote-trigger tool — a CLI-only tool (needs the session's claude.ai OAuth, so it's unavailable in headless cloud sessions) for creating/listing/updating scheduled claude.ai cloud routines. This skill describes that *capability*, not a fixed tool name: resolve the actual tool via this session's tool discovery (e.g. `ToolSearch`) before calling it, since CLI tool names can change — as of writing it is named `RemoteTrigger`, and the rest of this skill refers to it that way for concreteness. Each routine clones ONE repo on Sunday, scans it across five dimensions, auto-applies only obvious fixes on a branch, runs a stack-appropriate gate, and opens a PR for review (NEVER merges). This skill is the repeatable recipe behind that family of routines.
 
 Target repo = `$ARGUMENTS` (a local checkout path, a GitHub `owner/repo` slug, or — if empty — the current repo / cwd).
 
