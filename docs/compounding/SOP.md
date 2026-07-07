@@ -1,4 +1,4 @@
-<!-- compounding-system: v1 — installed from claude_tools; do not hand-edit; run /compounding upgrade -->
+<!-- compounding-system: v2 — installed from claude_tools; do not hand-edit; run /compounding upgrade -->
 # Compounding SOP — Continuously-Discovered Improvements
 
 Any session — scheduled routine, build agent, research thread — that encounters something worth
@@ -107,7 +107,39 @@ PR merged and corrects git-contradicted status prose. State the selector can't v
 **Weekly cleanup routine** — full scan of all OPEN items. Execute remaining `effort:low` items.
 Summarize `effort:medium` items for the operator. Leave `operator-action` items untouched.
 Also review STALE and NEEDS-REVIEW items surfaced by the selector — reclaim or retire them — and
-run `/compounding upgrade` so this repo's installed system tracks the canonical templates.
+run `/compounding upgrade` so this repo's installed system tracks the canonical templates. Then run
+`/compounding-curate` (the context-lifecycle pass): the loop only ever ADDS knowledge, so the
+always-on context (CLAUDE.md standing practices, this SOP, any "current state" doc) grows unbounded
+until it collapses — curate dedups, compresses, promotes stable practices into skills, and retires
+stale entries so the context every session pays for stays lean.
+
+---
+
+## Validating a fix — held-in + held-out (self-harness discipline)
+
+A self-improvement loop is a **propose → validate → accept** cycle, and validation has TWO halves. A
+fix is only *done* when it BOTH resolves the weakness it claims to (**held-in**) AND breaks nothing else
+(**held-out**). The daily suite green-check is only the held-out half — a passing suite does **not**
+prove the fix addressed the root cause (the item could be "fixed" and still broken).
+
+- **Held-in (the weakness is actually resolved):** a **bug / behavioral** item ships a regression test
+  that **fails on the pre-fix code and passes after the fix** — the failing test IS the proof the
+  weakness exists and the fix closes it, and it guards against regression forever. Write it FIRST
+  (watch it fail on the current code), then fix (watch it pass). This makes a "DONE" flip mean *proven
+  resolved*, not *CI happens to be green*. Doc-only, config, and pure-refactor items are exempt (no
+  behavior to pin) — say so in the PR.
+- **Held-out (nothing else regressed):** the repo's full gate (typecheck + tests — the daily
+  green-check) stays green.
+
+### Never reach green by editing the grader (reward-hacking guard)
+
+A self-improvement loop optimizes **whatever signal it is given** — here, "CI is green." So a fix must
+**never** reach green by *weakening the very check that judges it*: deleting a test case, loosening an
+assertion, relaxing a threshold, or editing an eval that guards the item's own behavior. This is the
+**immutable-grader rule**: the thing under test and the test that judges it must not move the same
+direction in one change. A drain PR that both changes a behavior AND weakens a grader of that behavior
+is a reward-hack smell → it is **never auto-merged**; it stays a draft for human review (drain STEP
+4.5). *Adding* the held-in regression test above, or *strengthening* a grader, is always fine.
 
 ---
 
