@@ -7,4 +7,4 @@
   `Ready: yes` item per fire to a PR (SOP.md § Auto-drain). Statuses update continuously — flip them
   in the same PR as the change, never park them for a wrap-up. Improvements to the compounding
   system itself get `Upstream: claude_tools` (SOP.md § Upstreaming).
-  <!-- compounding-system: v1 — installed from claude_tools; run /compounding upgrade -->
+  <!-- compounding-system: v2 — installed from claude_tools; run /compounding upgrade -->

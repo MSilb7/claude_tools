@@ -35,7 +35,7 @@ cat "$TPL/VERSION"                                       # must print a number
 If the symlink doesn't resolve (e.g. cloud session without the claude_tools checkout), fetch each
 template raw from `https://raw.githubusercontent.com/MSilb7/claude_tools/main/commands/compounding-templates/<file>`
 (files: `VERSION`, `SOP.md`, `compounding-status.mjs`, `compounding-status.test.mjs`,
-`auto-merge-journal.yml`, `compounding-drain.md`, `claude-md-snippet.md`).
+`auto-merge-journal.yml`, `compounding-drain.md`, `compounding-curate.md`, `claude-md-snippet.md`).
 
 ## 1 — Detect (validate, don't guess — same discipline as /add-weekly-hygiene)
 
@@ -58,6 +58,8 @@ and say so):
      documented path (node ≥18 required — check `node --version`; absent node = note it and install
      anyway, the drain routine's cloud env has node).
 3. `.claude/commands/compounding-drain.md` ← `$TPL/compounding-drain.md`
+   - and `.claude/commands/compounding-curate.md` ← `$TPL/compounding-curate.md` (the context-lifecycle
+     pass — run by the weekly hygiene routine and on demand; keeps the always-on context from rotting).
 4. CLAUDE.md: append the bullet from `$TPL/claude-md-snippet.md` (create CLAUDE.md containing a
    `# CLAUDE.md — <repo>` header + the bullet if the file is absent).
 5. GitHub repos only: `.github/workflows/auto-merge-journal.yml` ← `$TPL/auto-merge-journal.yml`.
@@ -106,7 +108,7 @@ end "blocked" — degrade to a paste-ready apply pack in the PR body + file the 
 1. Resolve `$TPL` + pull (step 0). Canonical version: `cat "$TPL/VERSION"`.
 2. Read the repo's installed stamps: `grep -rn "compounding-system: v" docs/compounding/SOP.md
    scripts/compounding-status.mjs .claude/commands/compounding-drain.md
-   .github/workflows/auto-merge-journal.yml CLAUDE.md 2>/dev/null`.
+   .claude/commands/compounding-curate.md .github/workflows/auto-merge-journal.yml CLAUDE.md 2>/dev/null`.
 3. For each installed file whose stamp version < canonical OR whose content differs from the
    template: replace it **wholesale** on branch `compounding/upgrade-v<VERSION>` (stamped files are
    canonical-owned — hand edits to them are lost by design; improvements belong upstream, say so in

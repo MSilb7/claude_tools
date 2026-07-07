@@ -9,7 +9,7 @@ description: >
   an item that is operator-action, Ready:no, above the effort ceiling, or already claimed.
 ---
 
-<!-- compounding-system: v1 — installed from claude_tools; do not hand-edit; run /compounding upgrade -->
+<!-- compounding-system: v2 — installed from claude_tools; do not hand-edit; run /compounding upgrade -->
 
 # compounding-drain — work one queue item to done
 
@@ -62,17 +62,34 @@ define done.
   the GitHub API. If a PR cannot be opened at all, note it in the run log and continue — the pushed
   branch is still the lock; the PR is reporting.
 
-## STEP 3 — implement to the AC
+## STEP 3 — implement to the AC (held-in first)
 Work strictly to the item's acceptance criteria — no scope creep; a neighboring discovery becomes a
 NEW queue entry, not extra diff. If the item is tagged `Upstream: claude_tools`, the implementation
 PR targets `github.com/MSilb7/claude_tools` (templates + VERSION bump) and this repo's item flips
-DONE referencing that PR. Follow the repo's practices (tests first where code changes).
+DONE referencing that PR.
+
+**Held-in proof (bug / behavioral items):** follow tests-first — add a regression test that **fails on
+the current, pre-fix code** (run it, watch it fail: that failure IS the proof the weakness is real),
+THEN implement the fix so the same test passes. A "DONE" flip must mean *the weakness is proven
+resolved*, not *the suite happens to be green* (SOP § Validating a fix — held-in + held-out). Doc-only,
+config, and pure-refactor items have no behavior to pin and are exempt — say so in the PR.
 
 ## STEP 4 — green-check
 Run the repo's gate (typecheck/tests — whatever its CI runs; check `package.json` scripts /
 `pyproject.toml` / CI workflow for the canonical commands). If red and you cannot make it green
 **within the item's scope**: push WIP, leave the PR draft, comment the failure on the PR, and EXIT
 (the item shows IN-PROGRESS; a human or the weekly sweep reclaims via STALE). Never mark ready on red.
+
+## STEP 4.5 — integrity check (no grader-hacking)
+Before finalizing, diff the change against its own graders. A self-improvement worker optimizes the
+signal it is given ("CI is green"), so guard against reaching green the wrong way: if the PR makes the
+gate pass by **weakening a test/eval that guards this item's behavior** — a removed case, a loosened
+assertion, a relaxed threshold, a deleted eval — that is a reward-hack, NOT a fix. Revert the grader
+change, keep the PR **draft**, and flag it for human review in a PR comment. The thing under test and
+the test that judges it must never move the same direction in one drain change. Adding the STEP 3
+held-in regression test, or *strengthening* a grader, is fine (SOP § Never reach green by editing the
+grader). If the item's genuine fix legitimately requires changing a test's expectations (the old
+assertion was itself wrong), that is a human-review case — do not auto-merge it.
 
 ## STEP 5 — flip status + finalize
 In the item's file, set `- **Status:** DONE (PR #<n>)` and tick the AC boxes that are objectively
