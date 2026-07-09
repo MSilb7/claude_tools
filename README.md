@@ -1,76 +1,93 @@
-# claude_tools
+# AI Tools
 
-A collection of reusable skills/commands for Claude Code.
+A canonical home for reusable AI-agent skills, scripts, references, and compatibility adapters.
+Claude Code and Codex are first-class targets; other clients can consume the same Agent Skills
+packages when they support `SKILL.md` or expose a compatible discovery directory.
 
-## Skills
+The GitHub repository and local checkout still use the legacy `claude_tools` name during the staged
+migration. Existing paths remain valid until the new skills are installed and verified.
 
-### `/interview`
-Ask clarifying questions before starting a task. Explores the codebase and uses `AskUserQuestion` to gather requirements, priorities, and constraints.
+## Portable skills
 
-```
-/interview
-/interview authentication flow
-```
+- `interview` — clarify requirements, constraints, priorities, and success criteria before acting.
+- `pretty-print` — design consistent, readable terminal and CLI output.
+- `codebase-review` — audit a repository for gaps, duplication, simplification, and product issues.
+- `data-science` — plan, execute, validate, and communicate rigorous reproducible analysis.
+- `migrate-agent-config` — audit and generalize an existing repository's AI-agent setup.
+- `promote-skill` — move a proven project-local workflow into the canonical skill repository.
 
-### `/pretty-print`
-Guidelines for consistent terminal output formatting. Provides ANSI color codes, status prefixes, and a copy-paste `utils/terminal.ts` module.
+Each canonical skill lives at `skills/<name>/SKILL.md`. Provider-specific behavior belongs in a
+reference or adapter, not in a duplicate copy of the workflow.
 
-### `/commit-skill`
-Save a project-local skill to `~/.claude/commands/` for global access.
+## Install
 
-```
-/commit-skill my-skill
-```
-
-### `/codebase-review`
-Review a codebase holistically (via `superpowers:brainstorming`) to find missing features,
-consolidation opportunities, and simplifications.
-
-```
-/codebase-review
-/codebase-review error handling and logging
-```
-
-### `/data-science`
-Structured data science workflow — problem understanding → technique selection → execution →
-rigorous validation. Use for any analytical or statistical question about data.
-(Example output: `ab_test_analysis.ipynb` at the repo root.)
-
-```
-/data-science did variant B actually improve conversion?
-```
-
-### `/add-weekly-hygiene`
-Create a per-repo weekly repo-hygiene cloud routine (claude.ai code trigger) — detects the repo's
-stack, picks the right test/typecheck gate, and registers a Sunday routine that opens a hygiene PR
-(never merges).
-
-```
-/add-weekly-hygiene              # current repo
-/add-weekly-hygiene owner/repo
-```
-
-### `/compounding`
-Set up, upgrade, or check the compounding self-improvement system (capture → queue → Ready gate →
-daily auto-drain) in any repo. Canonical templates live in `commands/compounding-templates/`
-(VERSION-stamped; system improvements arrive as `Upstream: claude_tools` queue items and fan out to
-every repo via `/compounding upgrade`).
-
-```
-/compounding                 # setup (default) — full tiered install, one PR, guided routines
-/compounding upgrade         # sync a repo's installed files to the latest templates
-/compounding status          # run the selector, report the queue
-```
-
-### `/sync-commands`
-Symlink all skills from this repo to `~/.claude/commands/`. Run after adding new skills.
-
-## Installation
-
-First time setup (symlink this skill manually, then use it):
+Preview every link without changing the machine:
 
 ```bash
-ln -sf "/Users/michaelsilberling/Documents Local/GitHub/claude_tools/commands/sync-commands.md" ~/.claude/commands/
+scripts/install-skills --dry-run
 ```
 
-Then run `/sync-commands` to link everything else. Run it again after adding new skills.
+Install for both Claude Code and Codex:
+
+```bash
+scripts/install-skills
+```
+
+Or install one target:
+
+```bash
+scripts/install-skills --target claude
+scripts/install-skills --target codex
+```
+
+The installer creates a stable `~/.ai-tools` link to this checkout, then links skill directories
+into `~/.claude/skills/` and `~/.agents/skills/`. During migration it also refreshes the existing
+`~/.claude/commands/` links. It updates symlinks but never overwrites real files or directories.
+
+After moving or renaming the checkout, rerun the installer from its new location. The platform links
+continue to point through `~/.ai-tools`, so only the stable anchor needs to change.
+
+## Legacy Claude workflows
+
+The `commands/` directory remains active for workflows that have not completed the portable
+migration:
+
+- `add-weekly-hygiene`
+- `compounding`
+- `sync-commands`
+
+Legacy command forms of migrated skills also remain temporarily. Claude Code prefers the modern
+skill when a skill and command share the same name.
+
+## Reorient an existing repository
+
+Do not mass-rewrite an existing repository's agent configuration. Start with a read-only audit of
+its instruction files, project skills, symlinks, scheduled workflows, and hard-coded repository
+references. A useful first prompt is:
+
+```text
+Audit this repository's AI-agent setup for the AI Tools migration. Inspect AGENTS.md, CLAUDE.md,
+.claude/, .agents/, symlinks, scheduled workflows, and references to claude_tools. Classify each
+item as portable workflow, Claude-specific integration, Codex-specific integration, historical
+documentation, or stale configuration. Propose the smallest behavior-preserving migration; do not
+change files until the plan is reviewed.
+```
+
+Repository-specific workflows should stay local. Shared workflows should point to the canonical
+skill packages. Historical build logs should remain historical unless they are still operational
+documentation.
+
+## Authoring rules
+
+- Put new shared workflows in `skills/<name>/SKILL.md` using lowercase hyphenated names.
+- Use only `name` and `description` in portable frontmatter.
+- Keep tool names and model names out of the portable core.
+- Put detailed reference material in `references/`, deterministic helpers in `scripts/`, and
+  copyable templates in `assets/`.
+- Run the skill validator, `scripts/install-skills --dry-run`, and relevant tests before committing.
+
+## Compounding system
+
+The existing compounding queue and template pack remain under `commands/compounding-templates/`
+until they migrate as one versioned unit with consuming repositories. Do not rename its
+`Upstream: claude_tools` marker piecemeal.

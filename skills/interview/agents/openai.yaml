@@ -1,0 +1,4 @@
+interface:
+  display_name: "Interview"
+  short_description: "Clarify a task before implementation"
+  default_prompt: "Use $interview to clarify this task before starting work."

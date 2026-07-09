@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pretty Print"
+  short_description: "Design clear terminal output"
+  default_prompt: "Use $pretty-print to improve this command-line output."

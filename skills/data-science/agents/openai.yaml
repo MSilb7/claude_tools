@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Science"
+  short_description: "Run rigorous reproducible analysis"
+  default_prompt: "Use $data-science to plan and execute this analysis rigorously."
