@@ -1,15 +1,18 @@
 ---
-description: Symlink all skills from claude_tools to ~/.claude/commands/
+description: Install shared AI Tools skills for Claude Code and Codex and refresh legacy Claude command links
 ---
 
-Symlink all `.md` files from the `claude_tools/commands/` directory to `~/.claude/commands/` for global access.
+Install every portable skill for Claude Code and Codex. Also refresh the legacy Claude command links
+that remain during the migration.
 
-Run this command:
+Run:
 
 ```bash
-for file in "/Users/michaelsilberling/Documents Local/GitHub/claude_tools/commands"/*.md; do
-  ln -sf "$file" ~/.claude/commands/
-done
+~/.ai-tools/scripts/install-skills --target all
 ```
 
-Report which files were linked.
+If the stable `~/.ai-tools` anchor has not been created yet, locate the checkout containing this
+command and run its `scripts/install-skills --target all` instead.
+
+Report the created, refreshed, unchanged, and conflicting links. Never replace a real file or
+directory with a symlink.

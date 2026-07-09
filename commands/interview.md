@@ -1,10 +1,8 @@
 ---
-description: Ask clarifying questions before proceeding with a task
-argument-hint: [optional: specific areas to focus on]
+description: Legacy Claude command wrapper for the portable interview skill
+argument-hint: [optional focus]
 ---
 
-Use the `AskUserQuestion` tool to gather context before proceeding.
+Read `~/.ai-tools/skills/interview/SKILL.md` and follow it for the current request.
 
-Review the conversation history and codebase, then ask clarifying questions. Continue asking follow-up questions in multiple rounds until you have enough clarity to proceed.
-
-Focus areas (if provided): $ARGUMENTS
+Additional focus supplied with this legacy command: `$ARGUMENTS`

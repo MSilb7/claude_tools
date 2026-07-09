@@ -1,0 +1,4 @@
+interface:
+  display_name: "Promote Skill"
+  short_description: "Move a local skill into AI Tools"
+  default_prompt: "Use $promote-skill to move this project-local skill into the canonical AI Tools repository."
