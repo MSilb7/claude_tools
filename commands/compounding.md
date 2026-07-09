@@ -16,7 +16,7 @@ One canonical system (this skill + its template pack) that every repo inherits: 
 improvement ideas as structured queue items; a **selector** derives each item's state from git/PR
 reality; a **Ready gate** keeps automation off half-scoped ideas; a **daily drain routine** works
 one firm item per fire to a PR; **status hygiene** keeps the queue truthful without anyone asking.
-Spec: `docs/superpowers/specs/2026-07-03-compounding-skill-design.md` (claude_tools).
+Spec: `docs/superpowers/specs/2026-07-03-compounding-skill-design.md` (ai-tools).
 
 Mode = first word of `$ARGUMENTS` (`setup` | `upgrade` | `status`; default `setup` — but if the
 target repo already has `docs/compounding/SOP.md`, say so and run `upgrade` instead). Target repo =
@@ -27,13 +27,13 @@ second argument or the current repo.
 ```bash
 SKILL_REAL=$(readlink -f ~/.claude/commands/compounding.md)
 TPL=$(dirname "$SKILL_REAL")/compounding-templates
-CANON_ROOT=$(cd "$(dirname "$SKILL_REAL")/.." && pwd)   # the claude_tools checkout
+CANON_ROOT=$(cd "$(dirname "$SKILL_REAL")/.." && pwd)   # the ai-tools checkout
 git -C "$CANON_ROOT" pull --ff-only 2>/dev/null || true  # best-effort freshness
 cat "$TPL/VERSION"                                       # must print a number
 ```
 
-If the symlink doesn't resolve (e.g. cloud session without the claude_tools checkout), fetch each
-template raw from `https://raw.githubusercontent.com/MSilb7/claude_tools/main/commands/compounding-templates/<file>`
+If the symlink doesn't resolve (e.g. cloud session without the ai-tools checkout), fetch each
+template raw from `https://raw.githubusercontent.com/MSilb7/ai-tools/main/commands/compounding-templates/<file>`
 (files: `VERSION`, `SOP.md`, `compounding-status.mjs`, `compounding-status.test.mjs`,
 `auto-merge-journal.yml`, `compounding-drain.md`, `compounding-curate.md`, `claude-md-snippet.md`,
 `PRD-template.md`, `prd-reconcile.md`, `prd-claude-md-snippet.md`).
