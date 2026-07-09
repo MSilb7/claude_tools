@@ -4,8 +4,8 @@ A canonical home for reusable AI-agent skills, scripts, references, and compatib
 Claude Code and Codex are first-class targets; other clients can consume the same Agent Skills
 packages when they support `SKILL.md` or expose a compatible discovery directory.
 
-The GitHub repository and local checkout still use the legacy `claude_tools` name during the staged
-migration. Existing paths remain valid until the new skills are installed and verified.
+The canonical GitHub repository is `MSilb7/ai-tools`. The stable `~/.ai-tools` anchor decouples
+agent discovery from the checkout's local folder name.
 
 ## Portable skills
 
@@ -67,7 +67,8 @@ references. A useful first prompt is:
 
 ```text
 Audit this repository's AI-agent setup for the AI Tools migration. Inspect AGENTS.md, CLAUDE.md,
-.claude/, .agents/, symlinks, scheduled workflows, and references to claude_tools. Classify each
+.claude/, .agents/, symlinks, scheduled workflows, and references to claude_tools (the former
+repository name). Classify each
 item as portable workflow, Claude-specific integration, Codex-specific integration, historical
 documentation, or stale configuration. Propose the smallest behavior-preserving migration; do not
 change files until the plan is reviewed.
@@ -90,4 +91,4 @@ documentation.
 
 The existing compounding queue and template pack remain under `commands/compounding-templates/`
 until they migrate as one versioned unit with consuming repositories. Do not rename its
-`Upstream: claude_tools` marker piecemeal.
+legacy `Upstream: claude_tools` marker piecemeal.
