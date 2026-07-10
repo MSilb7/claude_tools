@@ -15,7 +15,8 @@ argument-hint: "[setup|upgrade|status] [repo path — default: current repo]"
 One canonical system (this skill + its template pack) that every repo inherits: sessions **capture**
 improvement ideas as structured queue items; a **selector** derives each item's state from git/PR
 reality; a **Ready gate** keeps automation off half-scoped ideas; a **daily drain routine** works
-one firm item per fire to a PR; **status hygiene** keeps the queue truthful without anyone asking.
+one firm item per fire to a PR; **status hygiene** keeps the queue truthful without anyone asking;
+the product PRD and technical design stay reconciled with implementation at their distinct altitudes.
 Spec: `docs/superpowers/specs/2026-07-03-compounding-skill-design.md` (ai-tools).
 
 Mode = first word of `$ARGUMENTS` (`setup` | `upgrade` | `status`; default `setup` — but if the
@@ -28,6 +29,7 @@ second argument or the current repo.
 SKILL_REAL=$(readlink -f ~/.claude/commands/compounding.md)
 TPL=$(dirname "$SKILL_REAL")/compounding-templates
 CANON_ROOT=$(cd "$(dirname "$SKILL_REAL")/.." && pwd)   # the ai-tools checkout
+TECH_TEMPLATE="$CANON_ROOT/skills/maintain-technical-design/assets/TECHNICAL_DESIGN-template.md"
 git -C "$CANON_ROOT" pull --ff-only 2>/dev/null || true  # best-effort freshness
 cat "$TPL/VERSION"                                       # must print a number
 ```
@@ -36,16 +38,23 @@ If the symlink doesn't resolve (e.g. cloud session without the ai-tools checkout
 template raw from `https://raw.githubusercontent.com/MSilb7/ai-tools/main/commands/compounding-templates/<file>`
 (files: `VERSION`, `SOP.md`, `compounding-status.mjs`, `compounding-status.test.mjs`,
 `auto-merge-journal.yml`, `compounding-drain.md`, `compounding-curate.md`, `claude-md-snippet.md`,
-`PRD-template.md`, `prd-reconcile.md`, `prd-claude-md-snippet.md`).
+`continuous-improvement-agent-snippet.md`, `PRD-template.md`, `prd-reconcile.md`,
+`prd-claude-md-snippet.md`,
+`technical-design-agent-snippet.md`). Fetch the technical-design asset separately from
+`https://raw.githubusercontent.com/MSilb7/ai-tools/main/skills/maintain-technical-design/assets/TECHNICAL_DESIGN-template.md`
+and treat that downloaded path as `$TECH_TEMPLATE`. The portable skill asset is canonical; do not
+duplicate it into the legacy template pack.
 
 ## 1 — Detect (validate, don't guess — same discipline as /add-weekly-hygiene)
 
 Under the target repo root: `git remote get-url origin` (slug; no remote ⇒ no workflow tier, no
 auto-merge — note it), default branch (`git symbolic-ref refs/remotes/origin/HEAD`), stack
 (`bun.lockb`/`package.json` ⇒ bun/node; `pyproject.toml`/`requirements.txt` ⇒ python; `Cargo.toml`
-⇒ rust; `go.mod` ⇒ go; none ⇒ docs-only repo), CLAUDE.md present?, `.github/workflows/` present?,
+⇒ rust; `go.mod` ⇒ go; none ⇒ docs-only repo), AGENTS.md/CLAUDE.md present?, `.github/workflows/` present?,
 the repo's green-check commands (only gate on commands that exist), and whether
-`docs/compounding/SOP.md` already exists (⇒ `upgrade`).
+`docs/compounding/SOP.md` already exists (⇒ `upgrade`). Also inventory existing architecture,
+technical, operations, security, data, API, and decision documentation before installing the
+technical index; preserve it and link it rather than replacing it.
 
 ## 2 — SETUP mode (installs on a branch; ONE PR; never push the default branch)
 
@@ -61,23 +70,37 @@ and say so):
 3. `.claude/commands/compounding-drain.md` ← `$TPL/compounding-drain.md`
    - and `.claude/commands/compounding-curate.md` ← `$TPL/compounding-curate.md` (the context-lifecycle
      pass — run by the weekly hygiene routine and on demand; keeps the always-on context from rotting).
-4. CLAUDE.md: append the bullet from `$TPL/claude-md-snippet.md` (create CLAUDE.md containing a
-   `# CLAUDE.md — <repo>` header + the bullet if the file is absent).
+4. **Shared agent instructions and continuous improvement:**
+   - Make `AGENTS.md` the canonical cross-agent file. Create it with `# AGENTS.md — <repo>` when absent,
+     then append the compounding bullet from `$TPL/claude-md-snippet.md` and the clean-closure / skill-promotion
+     rules from `$TPL/continuous-improvement-agent-snippet.md` when each exact block is absent. Do not treat the
+     shared v6 stamp alone as proof that every standing block is installed.
+   - Preserve provider-specific files. If `CLAUDE.md` is absent, create it with `@AGENTS.md`; if it exists and
+     does not import the shared file, add that pointer without deleting or rewriting existing Claude guidance.
 5. **Product PRD (the second pillar — the living product north star):**
    - `.claude/commands/prd-reconcile.md` ← `$TPL/prd-reconcile.md` (the desired-vs-reality pass).
    - `docs/product/PRD.md` ← `$TPL/PRD-template.md` **ONLY IF ABSENT** — an existing PRD is NEVER overwritten
      (the skeleton is a starting point; the filled-in content is the repo's, not canonical-owned). Say so if you
      skip it. Offer to seed §1 vision from the repo's README/CLAUDE.md so it isn't left empty.
-   - CLAUDE.md: also append the bullet from `$TPL/prd-claude-md-snippet.md` (the "PRD is the north star / reconcile
-     it every thread" standing practice).
+   - AGENTS.md: append the bullet from `$TPL/prd-claude-md-snippet.md` (the "PRD is the north star / reconcile
+     confirmed decisions and shipped reality" standing practice).
    - Advise (don't force) wiring the PRD into the repo's own `catch-up`/session-start + end-of-session-review
      skills if they exist: read the PRD first; carry a PRD-drift check at wrap-up.
-6. GitHub repos only: `.github/workflows/auto-merge-journal.yml` ← `$TPL/auto-merge-journal.yml`.
+6. **Technical design (the third pillar — the implementation map):**
+   - `docs/technical/TECHNICAL_DESIGN.md` ← `$TECH_TEMPLATE` **ONLY IF ABSENT**. Existing canonical or
+     topic technical documentation is NEVER overwritten. For an existing system, seed the index from
+     repository evidence and link useful existing documents; for a greenfield repo, leave explicit placeholders.
+   - Append the concise pointer from `$TPL/technical-design-agent-snippet.md` to `AGENTS.md`.
+     Keep the portable reconciliation workflow in `maintain-technical-design`; do not copy that procedure into
+     always-on context or duplicate the pointer across instruction files.
+   - Explain the truth hierarchy: PRD owns what/why, technical design owns how, decision records own rationale,
+     and executable/generated/live sources own exact details.
+7. GitHub repos only: `.github/workflows/auto-merge-journal.yml` ← `$TPL/auto-merge-journal.yml`.
    State the TRUST BOUNDARY in the PR body: *"PRs touching only docs/compounding/** will squash-merge
    without review once this lands; requires Actions read/write workflow permissions."*
-7. Smoke: `node scripts/compounding-status.mjs` from the repo root runs clean (`total=0` on a fresh
+8. Smoke: `node scripts/compounding-status.mjs` from the repo root runs clean (`total=0` on a fresh
    queue is correct).
-8. Open ONE PR titled `feat: compounding system v<VERSION> — queue + drain worker + product PRD`.
+9. Open ONE PR titled `feat: compounding system v<VERSION> — queue + product + technical design`.
    Per the merge-asks standing practice: ask permission to merge; on approval, merge and confirm
    the workflow shows up under Actions.
 
@@ -88,8 +111,8 @@ Present the menu — what each piece does, what it costs, what it needs:
 | Routine | What it does | Default |
 |---|---|---|
 | **Daily compounding-drain** | one `Ready: yes` item per fire → PR; status hygiene every fire | **recommended ON** — cron `0 14 * * *` UTC (stagger vs other repos' drains if the operator runs several) |
-| **Weekly hygiene integration** | existing `/add-weekly-hygiene` routine for this repo gets 1 line added to its prompt: "run `/compounding upgrade`; review STALE/NEEDS-REVIEW queue items"; no hygiene routine yet → suggest `/add-weekly-hygiene` | ON if a hygiene routine exists |
-| **Capture** | passive — the CLAUDE.md bullet makes every session file items | already ON via setup |
+| **Weekly hygiene integration** | existing `/add-weekly-hygiene` routine for this repo gets 1 line added to its prompt: "run `/compounding upgrade`; review STALE/NEEDS-REVIEW queue items; reconcile product and technical docs when changed"; no hygiene routine yet → suggest `/add-weekly-hygiene` | ON if a hygiene routine exists |
+| **Capture** | passive — the AGENTS.md standing rules make every agent file items | already ON via setup |
 | **Domain scanners** | repo-specific opportunity scanners (see investment-agent's news scanner as the pattern) | pointer only — not auto-built |
 
 Interactive → AskUserQuestion for which to enable. Autonomous/directed → daily drain only, note the rest.
@@ -119,7 +142,7 @@ end "blocked" — degrade to a paste-ready apply pack in the PR body + file the 
 2. Read the repo's installed stamps: `grep -rn "compounding-system: v" docs/compounding/SOP.md
    scripts/compounding-status.mjs .claude/commands/compounding-drain.md
    .claude/commands/compounding-curate.md .claude/commands/prd-reconcile.md
-   .github/workflows/auto-merge-journal.yml CLAUDE.md 2>/dev/null`.
+   .github/workflows/auto-merge-journal.yml CLAUDE.md AGENTS.md 2>/dev/null`.
 3. For each installed file whose stamp version < canonical OR whose content differs from the
    template: replace it **wholesale** on branch `compounding/upgrade-v<VERSION>` (stamped files are
    canonical-owned — hand edits to them are lost by design; improvements belong upstream, say so in
@@ -127,6 +150,14 @@ end "blocked" — degrade to a paste-ready apply pack in the PR body + file the 
    files are never templates). **NEVER wholesale-replace `docs/product/PRD.md`** — the PRD skeleton is
    install-if-absent only; its filled-in content is the repo's, not canonical-owned. If a repo lacks a PRD
    entirely, offer to install the skeleton (`$TPL/PRD-template.md`); if it lacks `prd-reconcile.md`, install it.
+   **NEVER wholesale-replace `docs/technical/TECHNICAL_DESIGN.md`** or existing topic technical docs. If the
+   canonical index is absent, inventory existing documentation, then create it from `$TECH_TEMPLATE`, seed it
+   from repository evidence, and link what already exists. Install or refresh only the concise agent-config pointer from
+   `$TPL/technical-design-agent-snippet.md`.
+   Append missing v6 compounding, PRD, technical-design, and continuous-improvement snippets to `AGENTS.md`
+   by checking each exact block, not only the shared version stamp, and without replacing repository-owned
+   instructions. Ensure `CLAUDE.md` imports `@AGENTS.md`, preserving all provider-specific content; do not
+   duplicate the shared workflow prose in both files.
 4. Smoke (`node scripts/compounding-status.mjs`), then PR with a per-file `current → new` table.
    Ask permission to merge per the merge-asks practice (a weekly hygiene fire instead leaves the PR
    for review).
@@ -144,6 +175,9 @@ BLOCKED reasons when empty) and any STALE/NEEDS-REVIEW that need a human.
   unmerged work.
 - The drain worker gets NO connectors and NO repo credentials; repos with money-moving/state-mutating
   systems keep those out of the worker's reach entirely (the template's DEV-worker limits).
+- Product behavior stays in the PRD; implementation design stays in technical documentation; decision
+  rationale stays in decision records; exact executable and generated sources remain authoritative.
+- Never overwrite a repository's filled-in product or technical documentation during setup or upgrade.
 - Degrade gracefully at every tier; end by naming exactly what was installed, what was skipped and
   why, and the (at most one) operator ask.
 - Friction found while running THIS skill is itself a queue item — file it in the target repo tagged

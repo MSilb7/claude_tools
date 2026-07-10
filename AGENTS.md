@@ -30,14 +30,28 @@ adapters.
 - Preserve legacy command paths until their replacements are installed and verified in both Claude
   Code and Codex.
 
+## Continuous improvement
+
+- Treat a confirmed product or architecture decision as a documentation event. When a repository has
+  a PRD, technical design, or governing decision record, update the affected source in the same change;
+  do not wait for implementation to make the decision durable.
+- Fix obvious low-risk gaps inline. Route larger, uncertain, or recurring work to the compounding queue
+  with evidence and acceptance criteria, and never leave a substantive follow-up only in chat prose.
+- Prefer durable repository homes over memory-only notes. When a non-obvious multi-step procedure recurs,
+  make it a repository-local skill; when it generalizes across repositories, use `promote-skill` to improve
+  canonical AI Tools and replace duplicated standing prose with a pointer.
+- Before ending substantive work, check affected product and technical docs, compounding status, validation,
+  and stranded work. Every loose end must be completed, queued for an agent, or identified as a true
+  operator-only action.
+
 ## Verification
 
 After changing shared skills or installation behavior:
 
 1. Run `scripts/install-skills --dry-run`.
 2. Validate each changed skill with the available Agent Skills validator.
-3. Run `node --test commands/compounding-templates/compounding-status.test.mjs` when touching the
-   compounding system or repository-wide validation.
+3. Run `node --test commands/compounding-templates/*.test.mjs` when touching the compounding system
+   or repository-wide validation.
 4. Check `git diff` and confirm no generated cache, credentials, or unrelated user changes are
    included.
 

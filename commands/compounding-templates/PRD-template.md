@@ -1,14 +1,14 @@
 <!-- prd: canonical product north-star. Installed by `/compounding setup` (only if docs/product/PRD.md is
      absent — an existing PRD is NEVER overwritten). Fill this in for THIS product, then KEEP IT CURRENT:
      it is desired-state, reconciled against reality every thread (see § 7). One canonical home; no forks.
-     compounding-system: v5 — the PRD skeleton is versioned; your filled-in content is yours (not overwritten
+     compounding-system: v6 — the PRD skeleton is versioned; your filled-in content is yours (not overwritten
      by /compounding upgrade). -->
 # PRD — <product name> (the product north star)
 
 **What this is:** the single living description of *what this product is, how it works, what's built, and where
 it's going*. Read from and written back to every thread — not a write-once spec. It sits at **functionality
-altitude** (capabilities, principles, user stories, roadmap); the code + decision records carry implementation
-detail.
+altitude** (capabilities, principles, user stories, roadmap). `docs/technical/TECHNICAL_DESIGN.md` owns the
+implementation map, decision records own technical rationale, and executable/generated sources own exact detail.
 
 **Status legend:** **BUILT** (code + tests exist) · **PARTIAL** (works with caveats / manual steps) ·
 **UNBUILT** (roadmap) · **DECLINED** (a dated, reopenable "no").
@@ -53,10 +53,12 @@ The PRD is **desired-state**; the running system + each thread's work is **reali
 first-class loop:
 - **Read at thread start.** `catch-up` (or session start) reads this PRD first — the vision + open roadmap — so a
   continuation thread lands on the pre-established stories.
-- **Check during work.** New behavior → add/upgrade its **user story (§4) first**. **Invalidation** (work makes a
-  stated preference/story wrong) → update the PRD in the same PR. **Drift** (work strays from a still-valid rule)
-  → correct the work, or consciously update the PRD and say why. Can't resolve now → file a **compounding item**
+- **Check during work.** A confirmed product decision during discovery or planning updates this document before
+  implementation. New behavior → add/upgrade its **user story (§4) first**. **Invalidation** (work makes a stated
+  preference/story wrong) → update the PRD in the same PR. **Drift** (work strays from a still-valid rule) →
+  correct the work, or consciously update the PRD and say why. Can't resolve now → file a **compounding item**
   routing the PRD update forward.
 - **Reconcile on a cadence.** **`/prd-reconcile`** runs the desired-vs-reality pass; the end-of-session review
-  carries a PRD-drift check.
+  carries a PRD-drift check. Use `maintain-technical-design` for implementation design and cross-document
+  `PRD-TECH-MISMATCH` findings.
 - **One canonical home.** Vision/spec/stories/roadmap live here; other docs point in, never fork.

@@ -9,7 +9,7 @@ description: >
 argument-hint: "[since <git-ref or date> — default: the PRD's last-reconciled marker]"
 ---
 
-<!-- compounding-system: v5 — installed from claude_tools; do not hand-edit; run /compounding upgrade -->
+<!-- compounding-system: v6 — installed from claude_tools; do not hand-edit; run /compounding upgrade -->
 
 # /prd-reconcile — keep the product north star current (desired-state vs reality)
 
@@ -28,9 +28,14 @@ stories + statuses, and the roadmap. Note the last-reconciled marker (`git log -
 marker:
 - **Merged PRs** since the marker (titles/bodies for shipped capabilities, new preferences, edge-cases-that-
   became-rules).
+- **Confirmed operator decisions in the current discovery or planning thread** that change the outcome,
+  priorities, scope, non-goals, or success criteria even when implementation has not started.
 - **Build log / changelog** entries since the marker (what's built / in-flight / decided).
 - **New or changed decision records** (`docs/decisions/` or the repo's equivalent) — a new binding invariant
   belongs in the principles section.
+- **Technical-design changes** (`docs/technical/TECHNICAL_DESIGN.md` or equivalent) that reveal a product
+  capability, constraint, or roadmap status no longer represented at product altitude. Leave implementation
+  detail in the technical document.
 - **Open compounding items** that represent a capability/gap the PRD should name, or that are tagged for the PRD.
 - **Live status drift** — a capability/story marked PARTIAL/UNBUILT that has since shipped (or regressed).
 
@@ -42,6 +47,9 @@ marker:
 - **NEW-UNCAPTURED** — a capability/behavior with no story/capability line → add it; if a genuinely new *kind* of
   behavior, mark it ⚠️ needs-operator-review.
 - **ROADMAP-MOVE** — a roadmap item started/finished, or a new one emerged → update the roadmap + tied stories.
+- **PRD-TECH-MISMATCH** — product intent and the technical design no longer trace or agree → surface both
+  sources and route the implementation-side change through `maintain-technical-design`; do not copy technical
+  detail into the PRD.
 
 ## STEP 3 — propose
 A table: divergence → tag → the one-line PRD edit (before→after / new line / status flip). Batch the safe
@@ -60,5 +68,7 @@ describe it and ask to merge). Report before→after: statuses flipped, capabili
   removed. (Trim/compress prose with `/compounding-curate`, not here.)
 - **One canonical home.** If reality contradicts the PRD, the PRD changes (or the work does) — the two never
   coexist in disagreement. A second copy of vision/stories elsewhere → collapse it to a pointer.
+- **Keep distinct altitudes.** The PRD owns what/for whom/why; technical documentation owns how; decision
+  records own architectural rationale; executable/generated sources own exact detail.
 - **Reconciliation is itself compounding:** if the same drift recurs (a capability that keeps shipping without a
   story), file a queue item to fix the source.

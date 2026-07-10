@@ -92,3 +92,8 @@ documentation.
 The existing compounding queue and template pack remain under `commands/compounding-templates/`
 until they migrate as one versioned unit with consuming repositories. Do not rename its
 legacy `Upstream: claude_tools` marker piecemeal.
+
+Compounding v6 installs three maintained pillars: the improvement queue, the product PRD, and a
+concise technical-design index backed by the portable `maintain-technical-design` skill. New setups
+make `AGENTS.md` the shared instruction surface, keep provider files such as `CLAUDE.md` as adapters,
+and include standing rules for clean closure and promoting repeated workflows into skills.
