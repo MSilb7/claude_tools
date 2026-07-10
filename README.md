@@ -15,6 +15,14 @@ agent discovery from the checkout's local folder name.
 - `data-science` — plan, execute, validate, and communicate rigorous reproducible analysis.
 - `migrate-agent-config` — audit and generalize an existing repository's AI-agent setup.
 - `promote-skill` — move a proven project-local workflow into the canonical skill repository.
+- `compounding` — set up, upgrade, or inspect the repository improvement system.
+- `compounding-drain` — work one ready queue item through proof and review.
+- `compounding-curate` — keep standing agent context concise and correctly routed.
+- `prd-reconcile` — align confirmed product direction and shipped reality.
+- `maintain-technical-design` — maintain the repository's concise implementation map.
+- `catch-up` — build a read-only current-state briefing.
+- `capture-learning` — route a discovery into the correct durable source.
+- `end-session-review` — reconcile docs, validation, queue, and review state at close.
 
 Each canonical skill lives at `skills/<name>/SKILL.md`. Provider-specific behavior belongs in a
 reference or adapter, not in a duplicate copy of the workflow.
@@ -47,17 +55,17 @@ into `~/.claude/skills/` and `~/.agents/skills/`. During migration it also refre
 After moving or renaming the checkout, rerun the installer from its new location. The platform links
 continue to point through `~/.ai-tools`, so only the stable anchor needs to change.
 
-## Legacy Claude workflows
+## Claude compatibility adapters
 
-The `commands/` directory remains active for workflows that have not completed the portable
-migration:
+Thin command wrappers remain so existing Claude invocations resolve to the same canonical skills.
+They contain no reusable workflow logic. The remaining Claude-only workflows are:
 
 - `add-weekly-hygiene`
-- `compounding`
 - `sync-commands`
 
-Legacy command forms of migrated skills also remain temporarily. Claude Code prefers the modern
-skill when a skill and command share the same name.
+Claude Code prefers the modern skill when a skill and command share the same name. Scheduling and
+client-specific configuration stay in adapters; product, technical, and compounding behavior stays
+portable.
 
 ## Reorient an existing repository
 
@@ -85,15 +93,23 @@ documentation.
 - Keep tool names and model names out of the portable core.
 - Put detailed reference material in `references/`, deterministic helpers in `scripts/`, and
   copyable templates in `assets/`.
-- Run the skill validator, `scripts/install-skills --dry-run`, and relevant tests before committing.
+- Run the skill validator, `scripts/install-skills --dry-run`, the cross-client installer test, and
+  relevant workflow tests before committing.
 
 ## Compounding system
 
-The existing compounding queue and template pack remain under `commands/compounding-templates/`
-until they migrate as one versioned unit with consuming repositories. Do not rename its
-legacy `Upstream: claude_tools` marker piecemeal.
+The portable lifecycle is implemented by `compounding`, `compounding-drain`,
+`compounding-curate`, `prd-reconcile`, `maintain-technical-design`, `catch-up`,
+`capture-learning`, and `end-session-review`. The existing versioned template pack remains under
+`commands/compounding-templates/` as compatibility infrastructure for repositories installed before
+this migration. Do not add new workflow logic there or rename its legacy
+`Upstream: claude_tools` marker piecemeal.
 
 Compounding v6 installs three maintained pillars: the improvement queue, the product PRD, and a
 concise technical-design index backed by the portable `maintain-technical-design` skill. New setups
 make `AGENTS.md` the shared instruction surface, keep provider files such as `CLAUDE.md` as adapters,
 and include standing rules for clean closure and promoting repeated workflows into skills.
+
+New setup and upgrade work makes `AGENTS.md` the one shared repository instruction surface. Provider
+files import or point to it and may retain only provider-specific discovery, scheduling, connector,
+permission, or UI behavior.

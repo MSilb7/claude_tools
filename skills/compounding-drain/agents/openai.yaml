@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compounding Drain"
+  short_description: "Drain ready compounding work safely"
+  default_prompt: "Use $compounding-drain to work the next eligible queue item safely."

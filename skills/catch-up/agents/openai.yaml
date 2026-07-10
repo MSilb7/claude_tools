@@ -1,0 +1,4 @@
+interface:
+  display_name: "Catch Up"
+  short_description: "Orient from maintained repository state"
+  default_prompt: "Use $catch-up to summarize what is built, in flight, next, and at risk in this repository."

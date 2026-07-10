@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compounding Curate"
+  short_description: "Keep standing agent context lean"
+  default_prompt: "Use $compounding-curate to reconcile and streamline this repository's standing agent context."

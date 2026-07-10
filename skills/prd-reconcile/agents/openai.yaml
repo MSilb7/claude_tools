@@ -1,0 +1,4 @@
+interface:
+  display_name: "PRD Reconcile"
+  short_description: "Keep the product PRD aligned"
+  default_prompt: "Use $prd-reconcile to align the living PRD with confirmed decisions and repository reality."

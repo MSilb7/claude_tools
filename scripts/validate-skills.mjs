@@ -83,6 +83,10 @@ for (const skillName of skillNames) {
   const metadataPath = path.join(skillsRoot, skillName, "agents", "openai.yaml");
   if (fs.existsSync(metadataPath)) {
     const metadata = fs.readFileSync(metadataPath, "utf8");
+    const shortDescription = metadata.match(/^\s*short_description:\s*"([^"]+)"\s*$/m)?.[1];
+    if (!shortDescription || shortDescription.length < 25 || shortDescription.length > 64) {
+      fail(errors, skillName, "agents/openai.yaml short_description must be a quoted 25-64 character string");
+    }
     if (!metadata.includes(`$${skillName}`)) {
       fail(errors, skillName, "agents/openai.yaml default_prompt must mention the skill explicitly");
     }

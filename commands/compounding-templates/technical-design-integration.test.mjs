@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "../..");
 const command = fs.readFileSync(path.join(root, "commands/compounding.md"), "utf8");
+const compoundingSkill = fs.readFileSync(path.join(root, "skills/compounding/SKILL.md"), "utf8");
 const skill = fs.readFileSync(path.join(root, "skills/maintain-technical-design/SKILL.md"), "utf8");
 const assetPath = path.join(
   root,
@@ -22,24 +23,18 @@ const continuousSnippet = fs.readFileSync(
   "utf8",
 );
 
-test("v6 setup resolves the portable asset without duplicating it in the legacy pack", () => {
+test("portable setup resolves the technical-design asset without duplicating it in the legacy pack", () => {
   assert.equal(fs.readFileSync(path.join(here, "VERSION"), "utf8").trim(), "6");
-  assert.match(command, /TECH_TEMPLATE=.*maintain-technical-design\/assets\/TECHNICAL_DESIGN-template\.md/);
-  assert.match(command, /portable skill asset is canonical; do not\s+duplicate it into the legacy template pack/i);
+  assert.match(compoundingSkill, /technical-index asset lives with\s+`maintain-technical-design`/i);
+  assert.match(compoundingSkill, /A maintained `docs\/technical\/TECHNICAL_DESIGN\.md` only when absent/);
   assert.equal(fs.existsSync(path.join(here, "TECHNICAL_DESIGN-template.md")), false);
 });
 
 test("setup and upgrade preserve repository-owned technical documentation", () => {
-  assert.match(
-    command,
-    /docs\/technical\/TECHNICAL_DESIGN\.md` ← `\$TECH_TEMPLATE` \*\*ONLY IF ABSENT\*\*/,
-  );
-  assert.match(
-    command,
-    /NEVER wholesale-replace `docs\/technical\/TECHNICAL_DESIGN\.md`/,
-  );
-  assert.match(command, /canonical index is absent[\s\S]*create it from `\$TECH_TEMPLATE`/);
-  assert.match(command, /inventory existing architecture,\s+technical, operations, security, data, API, and decision documentation/i);
+  assert.match(compoundingSkill, /technical-design index or linked topic documents/);
+  assert.match(compoundingSkill, /Do not guess paths or overwrite repository-owned documents/);
+  assert.match(compoundingSkill, /Preserve and link existing topic documentation/);
+  assert.match(compoundingSkill, /current product, technical, decision, operations, and build-state documentation/);
   assert.match(asset, /never overwritten by compounding upgrades/i);
 });
 
@@ -81,18 +76,25 @@ test("the standing instruction stays concise and delegates to the portable workf
   assert.ok(snippet.split(/\r?\n/).length <= 6);
   assert.match(snippet, /maintain-technical-design/);
   assert.match(snippet, /do not load every linked topic doc by default/i);
-  assert.match(command, /Append the concise pointer[\s\S]*to `AGENTS\.md`/);
+  assert.match(compoundingSkill, /`AGENTS\.md` as the canonical shared instruction surface/);
+  assert.match(compoundingSkill, /reconciling technical design when implementation boundaries change/);
 });
 
 test("setup installs shared cross-agent maintenance rules", () => {
-  assert.match(command, /Make `AGENTS\.md` the canonical cross-agent file/);
-  assert.match(command, /If `CLAUDE\.md` is absent, create it with `@AGENTS\.md`/);
-  assert.match(command, /continuous-improvement-agent-snippet\.md/);
-  assert.match(command, /Do not treat the\s+shared v6 stamp alone as proof/);
+  assert.match(compoundingSkill, /`AGENTS\.md` as the canonical shared instruction surface/);
+  assert.match(compoundingSkill, /Thin provider adapters only where a client needs discovery or scheduling help/);
+  assert.match(compoundingSkill, /routing repeated procedures into repository-local or canonical skills/);
+  assert.match(compoundingSkill, /ending substantive work with docs, validation, queue, and stranded-work checks/);
   assert.match(continuousSnippet, /every remaining follow-up is either completed/i);
   assert.match(continuousSnippet, /repository-local skill/i);
   assert.match(continuousSnippet, /use `promote-skill`/i);
   assert.ok(continuousSnippet.split(/\r?\n/).length <= 12);
+});
+
+test("the legacy Claude command is only a compatibility wrapper", () => {
+  assert.match(command, /Legacy Claude command wrapper for the portable compounding skill/);
+  assert.match(command, /skills\/compounding\/SKILL\.md/);
+  assert.ok(command.split(/\r?\n/).length <= 10);
 });
 
 test("product reconciliation captures confirmed planning decisions", () => {
