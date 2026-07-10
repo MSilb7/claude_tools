@@ -1,0 +1,4 @@
+interface:
+  display_name: "End Session Review"
+  short_description: "Reconcile repository state before close"
+  default_prompt: "Use $end-session-review to reconcile this session's work and route every remaining loose end."

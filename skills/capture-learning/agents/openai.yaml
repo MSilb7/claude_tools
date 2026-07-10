@@ -1,0 +1,4 @@
+interface:
+  display_name: "Capture Learning"
+  short_description: "Route learnings into durable sources"
+  default_prompt: "Use $capture-learning to save this learning in the correct durable repository source."

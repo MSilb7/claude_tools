@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compounding"
+  short_description: "Install or upgrade repository compounding"
+  default_prompt: "Use $compounding to set up, upgrade, or inspect this repository's compounding system."

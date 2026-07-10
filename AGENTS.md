@@ -11,8 +11,8 @@ adapters.
 - `skills/<name>/agents/openai.yaml` — optional Codex UI metadata; it must not contain workflow logic.
 - `commands/` — legacy Claude Code commands retained during migration. Do not add new shared
   workflows here.
-- `commands/compounding-templates/` — legacy canonical template pack for the compounding system;
-  migrate it as a separate, versioned change.
+- `commands/compounding-templates/` — versioned compatibility assets for repositories installed
+  before lifecycle workflows became portable. New workflow logic belongs in skills.
 - `scripts/install-skills` — installs the shared skills through symlinks and refreshes compatibility
   links without overwriting real files.
 
@@ -29,6 +29,24 @@ adapters.
   deterministic work to `scripts/`, and copyable templates to `assets/`.
 - Preserve legacy command paths until their replacements are installed and verified in both Claude
   Code and Codex.
+
+## Portable repository lifecycle
+
+The canonical lifecycle is a cooperating skill set, not a provider-specific command suite:
+
+- `compounding` installs, upgrades, or inspects the repository system.
+- `compounding-drain` works one ready improvement safely.
+- `compounding-curate` keeps standing context lean and correctly routed.
+- `prd-reconcile` keeps confirmed product direction aligned with reality.
+- `maintain-technical-design` keeps the implementation map current.
+- `catch-up` establishes read-only session context.
+- `capture-learning` routes discoveries to durable sources.
+- `end-session-review` closes documentation, validation, queue, and review loops.
+
+New repository setups must expose these behaviors through `AGENTS.md` and the shared skill layer.
+`CLAUDE.md`, Codex configuration, and other provider files may import or point to the shared layer,
+but must not become independently maintained copies. Scheduling, connector attachment, permission
+configuration, and client UI actions remain provider adapters.
 
 ## Continuous improvement
 
@@ -48,11 +66,14 @@ adapters.
 
 After changing shared skills or installation behavior:
 
-1. Run `scripts/install-skills --dry-run`.
-2. Validate each changed skill with the available Agent Skills validator.
-3. Run `node --test commands/compounding-templates/*.test.mjs` when touching the compounding system
+1. Run `node scripts/validate-skills.mjs`.
+2. Run `scripts/install-skills --dry-run` and inspect both Claude and Codex targets.
+3. Run `node --test scripts/install-skills.test.mjs` when changing discovery or the portable
+   lifecycle set.
+4. Validate each changed skill with the available Agent Skills validator.
+5. Run `node --test commands/compounding-templates/*.test.mjs` when touching the compounding system
    or repository-wide validation.
-4. Check `git diff` and confirm no generated cache, credentials, or unrelated user changes are
+6. Check `git diff` and confirm no generated cache, credentials, or unrelated user changes are
    included.
 
 ## Compounding queue
