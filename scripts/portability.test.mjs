@@ -38,3 +38,12 @@ test("sync workflow verifies shared skills while preserving provider discovery",
   assert.match(command, /skills\/sync-ai-tools\/SKILL\.md/);
   assert.ok(command.split(/\r?\n/).length <= 8);
 });
+
+test("portable compounding drain has bounded looping and repository-verifiable readiness gates", () => {
+  const drain = read("skills/compounding-drain/SKILL.md");
+
+  assert.match(drain, /at most three eligible queue items per run/i);
+  assert.match(drain, /`Ready-when`/);
+  assert.match(drain, /machine-checkable from repository and review state/i);
+  assert.match(drain, /rerun the selector/i);
+});
