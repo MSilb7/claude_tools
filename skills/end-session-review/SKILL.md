@@ -52,6 +52,18 @@ Each material follow-up must be exactly one of:
 Promote a non-obvious repeated procedure to a repository-local skill, or to canonical AI Tools with
 `promote-skill` when it generalizes. Do not leave substantive follow-up only in the final chat reply.
 
+## 5a. Merge checkpoint — the auto-detected stopping point between wraps
+
+A PR merging is the clearest natural stopping point a session produces, so treat **every merge as a
+mini checkpoint** without waiting for the wrap: sweep the conversation since the last checkpoint and
+answer in one line — loose ends to file? learnings to capture? a doc the merge just made stale? If
+none, say exactly "merge checkpoint: nothing new to file or compound." This is deliberately
+lightweight (one line, not a full review) so multi-PR sessions keep momentum; the full review below
+still owns the actual wrap. Deterministic enforcement for Claude Code ships alongside this skill:
+`scripts/merge-checkpoint-hook.py` + a `PostToolUse` (Bash) entry in `.claude/settings.json` inject
+the checkpoint prompt whenever a `gh pr merge` runs — install both in repositories that want the
+trigger to be machinery rather than memory. Other providers apply the rule behaviorally.
+
 ## 5b. Capture what the session learned
 
 Loose ends are not the only compounding output — sweep the session itself for durable learnings the
