@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/merge-checkpoint-hook.py\"",
+            "timeout": 10,
+            "statusMessage": "Merge checkpoint — PR merge is a natural stopping point (compound?)"
+          }
+        ]
+      }
+    ]
+  }
+}
